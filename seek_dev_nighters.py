@@ -1,4 +1,7 @@
+from datetime import datetime
+
 import requests
+import pytz
 
 
 def get_pages_count():
@@ -15,7 +18,7 @@ def load_attempts(pages_count):
     for page in range(1, pages+1):
         query_str = '{}?page={}'.format(url, page)
         resp = requests.get(query_str)
-        print(resp.url)
+        #print(resp.url)
         records = resp.json()['records']
         for record in records:
             yield record
@@ -30,8 +33,16 @@ def load_attempts(pages_count):
         }
 """
 def get_midnighters():
-    pass
+    pages_count = get_pages_count()
+    gen = load_attempts(pages_count)
+    for item in gen:
+        if item['timestamp']:
+            time_zone = pytz.timezone(item['timezone'])
+            date_time = datetime.fromtimestamp(item['timestamp'], tz)
+            print(dt)
+
 
 if __name__ == '__main__':
-        pages_count = get_pages_count()
-        load_attempts(pages_count)
+        #pages_count = get_pages_count()
+        #load_attempts(pages_count)
+        get_midnighters()
