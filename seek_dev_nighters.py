@@ -2,6 +2,7 @@ from datetime import datetime
 
 import requests
 import pytz
+import tqdm
 
 
 def get_pages_count():
@@ -15,7 +16,9 @@ def get_pages_count():
 def load_attempts(pages_count):
     url = 'https://devman.org/api/challenges/solution_attempts/'
     pages = pages_count
-    for page in range(1, pages+1):
+    pbar = tqdm.tqdm(range(1, pages + 1))
+    for page in pbar:
+    #for page in range(1, pages+1):
         query_str = '{}?page={}'.format(url, page)
         resp = requests.get(query_str)
         #print(resp.url)
@@ -38,11 +41,12 @@ def get_midnighters():
     for item in gen:
         if item['timestamp']:
             time_zone = pytz.timezone(item['timezone'])
-            date_time = datetime.fromtimestamp(item['timestamp'], tz)
-            print(dt)
-
-
+            date_time = datetime.fromtimestamp(item['timestamp'], time_zone)
+            if (6 >= date_time.hour >= 0): 
+                #print(date_time, item['username'])
+                pass
+           
 if __name__ == '__main__':
         #pages_count = get_pages_count()
         #load_attempts(pages_count)
-        get_midnighters()
+        print(get_midnighters())
