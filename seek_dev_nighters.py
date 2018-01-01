@@ -2,52 +2,42 @@ from datetime import datetime
 
 import requests
 import pytz
-import tqdm
+
+URL_API = 'https://devman.org/api/challenges/solution_attempts/'
 
 
-def get_pages_count():
-    url = 'https://devman.org/api/challenges/solution_attempts/'
-    resp = requests.get(url)
+def get_number_of_pages():
+    resp = requests.get(URL_API)
     resp_dict = resp.json()
     page_count = resp_dict['number_of_pages']
     return page_count
 
 
-def load_attempts(pages_count):
-    url = 'https://devman.org/api/challenges/solution_attempts/'
-    pages = pages_count
-    for page in range(1, pages+1):
-        query_str = '{}?page={}'.format(url, page)
+def load_attempts(number_of_pages):
+    for page in range(1, number_of_pages + 1):
+        query_str = '{}?page={}'.format(URL_API, page)
         resp = requests.get(query_str)
-        #print(resp.url)
         records = resp.json()['records']
         for record in records:
             yield record
 
-"""
-        # FIXME подключить загрузку данных из API
 
-        yield {
-            'username': 'bob',
-            'timestamp': 0,
-            'timezone': 'Europe/Moscow',
-        }
-"""
-def get_midnighters():
-    users_owls = {}
-    pages_count = get_pages_count()
-    gen = load_attempts(pages_count)
-    for item in gen:
-        if item['timestamp']:
-            time_zone = pytz.timezone(item['timezone'])
-            date_time = datetime.fromtimestamp(item['timestamp'], time_zone)
-            if (6 >= date_time.hour >= 0): 
-                print(datetime.strftime(date_time, "%Y.%m.%d %H:%M:%S"),
-                      item['username'])
-                #users_owls[item['username']] = date_time
-    #return users_owls
-           
+def get_midnighters(load_attempts):
+    midnighters = set()
+    for item in load_attempts:
+        time_zone = pytz.timezone(item['timezone'])
+        local_datetime = datetime.fromtimestamp(item['timestamp'], time_zone)
+        if (5 >= local_datetime.hour >= 0):
+            midnighters.add(item['username'])
+    return midnighters
+
+
+def main():
+    number_of_pages = get_number_of_pages()
+    attempts = load_attempts(number_of_pages)
+    midnighters = get_midnighters(attempts)
+    print(midnighters)
+
+
 if __name__ == '__main__':
-        #pages_count = get_pages_count()
-        #load_attempts(pages_count)
-        get_midnighters()
+    main()
