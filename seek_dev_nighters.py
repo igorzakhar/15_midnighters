@@ -22,28 +22,29 @@ def load_attempts(number_of_pages):
             yield record
 
 
-def get_midnighters(records):
+def get_midnighters(attempts):
     start_time = time(0, 0)
     end_time = time(6, 0)
     midnighters = set()
-    for item in records:
-        time_zone = pytz.timezone(item['timezone'])
-        local_datetime = datetime.fromtimestamp(item['timestamp'], time_zone)
+    for attempt in attempts:
+        time_zone = pytz.timezone(attempt['timezone'])
+        local_datetime = datetime.fromtimestamp(
+            attempt['timestamp'], time_zone)
         if (end_time >= local_datetime.time() >= start_time):
-            midnighters.add(item['username'])
+            midnighters.add(attempt['username'])
     return midnighters
 
 
-def print_output(content):
+def print_output(midnighters):
     print("Users, who have sent a solution after 00-00:")
-    for item in content:
-        print(item)
+    for midnighter in midnighters:
+        print(midnighter)
 
 
 def main():
     number_of_pages = get_number_of_pages()
-    content = load_attempts(number_of_pages)
-    midnighters = get_midnighters(content)
+    attempts = load_attempts(number_of_pages)
+    midnighters = get_midnighters(attempts)
     print_output(midnighters)
 
 
