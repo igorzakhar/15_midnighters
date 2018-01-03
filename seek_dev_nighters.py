@@ -9,7 +9,7 @@ def load_attempts(url_api):
     while True:
         payload = {'page': page_number}
         response = requests.get(url_api, params=payload)
-        if response.status_code == 200:
+        if response.ok:
             records = response.json()['records']
             page_number += 1
             for record in records:
