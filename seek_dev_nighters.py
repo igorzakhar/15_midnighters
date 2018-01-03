@@ -9,12 +9,12 @@ def load_attempts(url_api):
     while True:
         payload = {'page': page_number}
         response = requests.get(url_api, params=payload)
-        if response.ok:
-            records = response.json()['records']
-            page_number += 1
-            for record in records:
-                yield record
-        else:
+        records = response.json()['records']
+        for record in records:
+            yield record
+
+        page_number += 1
+        if page_number > response.json()['number_of_pages']:
             break
 
 
