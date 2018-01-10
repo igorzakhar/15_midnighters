@@ -19,8 +19,8 @@ def load_attempts(url_api):
 
 
 def get_midnighters(attempts):
-    start_time = time(0, 0)
-    end_time = time(6, 0)
+    start_time = 0
+    end_time = 6
     midnighters = set()
     for attempt in attempts:
         time_zone = pytz.timezone(attempt['timezone'])
@@ -28,7 +28,7 @@ def get_midnighters(attempts):
             attempt['timestamp'],
             time_zone
         )
-        if (end_time >= local_datetime.time() >= start_time):
+        if (end_time > local_datetime.time().hour >= start_time):
             midnighters.add(attempt['username'])
     return midnighters
 
